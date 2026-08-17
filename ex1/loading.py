@@ -12,7 +12,7 @@ def checking_dep() -> tuple[bool, list[ModuleType]]:
     for key, value in liste:
         try:
             res.append(importlib.import_module(key))
-            print(f"[OK] {key} ({key.__version__}) - {value}")
+            print(f"[OK] {key} ({res[-1].__version__}) - {value}")
         except ModuleNotFoundError as error:
             if error.name == key:
                 print(f" Missing dependency for {key} :")
@@ -29,7 +29,11 @@ def main():
     print()
     print("LOADING STATUS: Loading programs...\n")
     print("Checking dependencies:")
-    valide, [pd, np, matplotlib] = checking_dep()
+    try:
+        valide, [pd, np, matplotlib] = checking_dep()
+    except ValueError as error:
+        print(f"[ERROR] : {error}")
+        valide = False
 
     if not valide:
         print("\n === instruction for installation of pip or Poetry === ")
@@ -51,3 +55,6 @@ def main():
         print("Generating visualization...")
         print("\nAnalysis complete!")
         print("Results saved to: matrix_analysis.png")
+
+if __name__ == "__main__":
+    main()
