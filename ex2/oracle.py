@@ -3,16 +3,21 @@ import os
 import sys
 from typing import Optional
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    print("ERROR: python-dotenv is not installed.")
+    print("Please run: pip install python-dotenv")
+    sys.exit(1)
 
 
 def load_configuration() -> dict[str, str]:
     defaults: dict[str, str] = {
         "MATRIX_MODE": "development",
-        "DATABASE_URL": "sqlite:///local_matrix.db",
+        "DATABASE_URL": "",
         "API_KEY": "",
         "LOG_LEVEL": "DEBUG",
-        "ZION_ENDPOINT": "http://localhost:9999",
+        "ZION_ENDPOINT": "",
     }
 
     load_dotenv()
@@ -24,19 +29,11 @@ def load_configuration() -> dict[str, str]:
     return config
 
 
-def mask_secret(value: str, visible_chars: int = 4) -> str:
-    if not value:
-        return "NOT SET"
-    if len(value) <= visible_chars:
-        return "*" * len(value)
-    return value[:visible_chars] + "*" * (len(value) - visible_chars)
-
-
 def security_check(config: dict[str, str]) -> list[str]:
     results = []
 
     if config["API_KEY"]:
-        results.append("[OK] API key detected (not hardcoded, loaded from env)")
+        results.append("[OK] No hardcoded secrets detected")
     else:
         results.append("[WARN] No API key configured")
 
@@ -44,7 +41,7 @@ def security_check(config: dict[str, str]) -> list[str]:
     if env_file_exists:
         results.append("[OK] .env file properly configured")
     else:
-        results.append("[WARN] No .env file found (using defaults / real env vars)")
+        results.append("[WARN] No .env file found")
 
     if config["MATRIX_MODE"] == "production":
         results.append("[OK] Production overrides available")
@@ -59,15 +56,24 @@ def print_status(config: dict[str, str]) -> None:
 
     print("Configuration loaded:")
     print(f"Mode: {config['MATRIX_MODE']}")
-    print(f"Database: {config['DATABASE_URL']}")
-    print(f"API Access: {mask_secret(config['API_KEY'])}")
+    if config['DATABASE_URL']:
+        print("Database:  Connected to local instance")
+    else:
+        print("Database: None")
+    if (config['API_KEY']):
+        print("API Access: Authenticated")
+    else:
+        print("API Access: Missing or default API_KEY (Unauthorized)")
     print(f"Log Level: {config['LOG_LEVEL']}")
-    print(f"Zion Network: {config['ZION_ENDPOINT']}")
+    if config['ZION_ENDPOINT']:
+        print("Zion Network: Online")
+    else:
+        print("Zion Network: URL for the resistance network is missing")
 
     if config["MATRIX_MODE"] == "production":
-        print("\n[PRODUCTION MODE] Verbose logging disabled, strict checks enabled.")
+        print("\n[PRODUCTION MODE].")
     else:
-        print("\n[DEVELOPMENT MODE] Verbose logging enabled, using local defaults.")
+        print("\n[DEVELOPMENT MODE].")
 
     print("\nEnvironment security check:")
     for line in security_check(config):

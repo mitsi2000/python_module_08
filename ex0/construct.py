@@ -23,7 +23,7 @@ if __name__ == "__main__":
         print("WARNING: You're in the global environment!")
         print("The machines can see everything you install.\n")
         print("To enter the construct, run:")
-        print("python -m venv matrix_env")
+        print("python3 -m venv matrix_env")
         print("source matrix_env/bin/activate # On Unix")
         print("matrix_env\\Scripts\\activate # On Windows")
         print("\nThen run this program again.")

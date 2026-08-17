@@ -4,9 +4,9 @@ from types import ModuleType
 
 
 def checking_dep() -> tuple[bool, list[ModuleType]]:
-    liste: dict = [("pandas", "Data manipulation ready"),
-                   ("numpy", "Numerical computation ready"),
-                   ("matplotlib", "Visualization ready")]
+    liste: list[tuple] = [("pandas", "Data manipulation ready"),
+                          ("numpy", "Numerical computation ready"),
+                          ("matplotlib", "Visualization ready")]
     ready: bool = True
     res: list[ModuleType] = []
     for key, value in liste:
@@ -38,7 +38,7 @@ def main():
     if not valide:
         print("\n === instruction for installation of pip or Poetry === ")
         print("\n To install using PIP, run:")
-        print(" pip install requirements.txt")
+        print(" pip install -r requirements.txt")
         print("\n To install using POETRY, run:")
         print(" poetry install")
     else:
@@ -55,6 +55,7 @@ def main():
         print("Generating visualization...")
         print("\nAnalysis complete!")
         print("Results saved to: matrix_analysis.png")
+
 
 if __name__ == "__main__":
     main()
